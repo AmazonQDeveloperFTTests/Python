@@ -151,7 +151,7 @@ def categorical_cross_entropy(
 def categorical_focal_cross_entropy(
     y_true: np.ndarray,
     y_pred: np.ndarray,
-    alpha: np.ndarray = None,
+    alpha: np.ndarray | None = None,
     gamma: float = 2.0,
     epsilon: float = 1e-15,
 ) -> float:
@@ -648,7 +648,11 @@ def kullback_leibler_divergence(y_true: np.ndarray, y_pred: np.ndarray) -> float
     >>> true_labels = np.array([0.2, 0.3, 0.5])
     >>> predicted_probs = np.array([0.3, 0.3, 0.4])
     >>> float(kullback_leibler_divergence(true_labels, predicted_probs))
-    0.030478754035472025
+    0.0304787540354719
+    >>> true_labels = np.array([0, 0.5, 0.5])
+    >>> predicted_probs = np.array([0.3, 0.3, 0.4])
+    >>> float(kullback_leibler_divergence(true_labels, predicted_probs))
+    0.3669845875400667
     >>> true_labels = np.array([0.2, 0.3, 0.5])
     >>> predicted_probs = np.array([0.3, 0.3, 0.4, 0.5])
     >>> kullback_leibler_divergence(true_labels, predicted_probs)
@@ -658,7 +662,9 @@ def kullback_leibler_divergence(y_true: np.ndarray, y_pred: np.ndarray) -> float
     """
     if len(y_true) != len(y_pred):
         raise ValueError("Input arrays must have the same length.")
-
+    beta = 1e-15
+    y_true = y_true + beta
+    y_pred = y_pred + beta
     kl_loss = y_true * np.log(y_true / y_pred)
     return np.sum(kl_loss)
 
